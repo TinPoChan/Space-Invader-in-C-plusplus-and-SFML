@@ -8,3 +8,6 @@ Member: Tin Po Chan, Dang Le, Jordan Rasmussen
 SFML Intro: https://www.sfml-dev.org/
 
 if you want to play the game, just download the debug folder(that one has a exe file), then play the exe file.
+
+Here is the video demo: https://www.youtube.com/watch?v=BWgqa6prxDE
+ 
