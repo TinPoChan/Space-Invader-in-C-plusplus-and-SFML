@@ -10,7 +10,7 @@ class Boss : public Aliens{                             //inheritance
 public:
     Boss() {                                            //constructor
         getSprite().setPosition(250.0, 10.0);           //set position
-        getSprite().setScale(2.5, 2.5);                 //set scale of the photo (in the other words, define the size of the photo)
+        getSprite().setScale(2.5, 2.5);                 //set scale of the photo (in the other words, resize of the photo)
     }
     void print_boss(sf::RenderWindow &window) {         //print function
         photo.loadFromFile("boss.png");                 //loading photo

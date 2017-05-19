@@ -102,9 +102,9 @@ int main()
         //for boss aliens movement
         bool boss_moveRight = false;
 
-        //aliens die music loaded, ref: https://www.sfml-dev.org/documentation/2.4.2/classsf_1_1Music.php
-        sf::Music music;
-        music.openFromFile("explosion.wav");
+        
+        //sf::Music music;
+        //music.openFromFile("explosion.wav");
 
         //when the windows open
         while (window.isOpen()) {
@@ -141,7 +141,7 @@ int main()
             //spaceship shooting
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {                     //if Space Key pressed
                 //if a bullet is still alive, you cannot shot again (shoot once a time)
-                if (myBullet.isFire == false && myship.isAlive) myBullet.shoot(myship);
+                if (!myBullet.isFire && myship.isAlive) myBullet.shoot(myship);
             }
 
             //----------------------------------------END_SHIP----------------------------------------------
@@ -149,8 +149,8 @@ int main()
             //------------------------------------------Aliens----------------------------------------------
 
             //checking aliens bounding
-            if (alienArray[0].getSprite().getPosition().x <= 30) moveRight = true;
-            if (alienArray[3].getSprite().getPosition().x >= 530) moveRight = false;
+            if (alienArray.at(0).getSprite().getPosition().x <= 30) moveRight = true;
+            if (alienArray.at(3).getSprite().getPosition().x >= 530) moveRight = false;
             if (a_boss->getSprite().getPosition().x <= 30) boss_moveRight = true;
             if (a_boss->getSprite().getPosition().x >= 530) boss_moveRight = false;
 
@@ -160,19 +160,13 @@ int main()
             sf::Time down_time = moveDownClock.getElapsedTime();
             //keep moving left or right (depends on the bounding check)
             if (time.asSeconds() > 0.1) {                                       //each 0.1 second the aliens will move
-                if (moveRight)                                                  //if moveRight is true, then all aliens move right { move.(10.0f, 0.0f) }
-                    for (int i = 0; i < MAX_ALIENS; ++i) {
-                        alienArray[i].getSprite().move(10.0f, 0.0f);
-                    }
-
-                if (!moveRight)                                                 //if moveRight is false, then all aliens move left { move.(-10.0f, 0.0f) }
-                    for (int i = 0; i < MAX_ALIENS; ++i) {
-                        alienArray[i].getSprite().move(-10.0f, 0.0f);
-                    }
+                for (int i = 0; i < MAX_ALIENS; ++i) {                          //if moveRight is true, then all aliens move right { move.(10.0f, 0.0f) }; move left when moveRight is false
+                    (moveRight ? alienArray.at(i).getSprite().move(10.0f, 0.0f) : alienArray.at(i).getSprite().move(-10.0f, 0.0f));
+                }
 
                 if (down_time.asSeconds() > 3) {                                //each 3 second the aliens will move downward { move.(0.0f, 10.0f) }
                     for (int i = 0; i < MAX_ALIENS; ++i) {
-                        alienArray[i].getSprite().move(0.0f, 10.0f);
+                        alienArray.at(i).getSprite().move(0.0f, 10.0f);
                     }
                     moveDownClock.restart();                                    //reset the 3 second clock
                 }
@@ -193,16 +187,15 @@ int main()
             //2.1 kill the ship
             //3 print the aliens
             for (int i = 0; i < MAX_ALIENS; ++i) {
-                if (Intersect::isTouch(myBullet, alienArray[i]) && alienArray[i].isAlive) {                                 //1
-                    alienArray[i].Kill();
+                if (Intersect::isTouch(myBullet, alienArray.at(i)) && alienArray.at(i).isAlive) {                                 //1
+                    alienArray.at(i).Kill();
                     record += 500; //500 points per alien
-                    music.play();
                     myBullet.Kill();
                     aliensLeft--;
 
                 }
-                if (Intersect::isTouch(myship, alienArray[i]) && alienArray[i].isAlive && myship.isAlive) myship.Kill();    //2
-                alienArray[i].print(window);                                                                                //3
+                if (Intersect::isTouch(myship, alienArray.at(i)) && alienArray.at(i).isAlive && myship.isAlive) myship.Kill();    //2
+                alienArray.at(i).print(window);                                                                                   //3
             }
             //--------------------------------------END_Aliens--------------------------------------------
 
@@ -211,7 +204,6 @@ int main()
             if (Intersect::isTouch(myBullet, boss) && a_boss->isAlive) {          //check is the bullet hit the boss and is the boss alive (a_boss is a point to boss)
                 a_boss->Kill();                                                   //if yes then kill the boss
                 record += 10000;                                                  //10000 points for the boss
-                music.play();                                                     //play the explosion music
                 myBullet.Kill();                                                  //kill the bullet
                 aliensLeft--;                                                     //aliensLeft sub 1
             }
@@ -224,7 +216,7 @@ int main()
 
             //-------------------------------------AliensBullet-------------------------------------------
 
-            if (aliensbullet.isAlive == false) {                                  //aliens can only shoot once a time
+            if (!aliensbullet.isAlive) {                                          //aliens can only shoot once a time
                 aliensbullet.alien_shoot(alienArray[rand()&MAX_ALIENS - 1]);      //choose a alien randomly to shoot
             }
 
@@ -232,12 +224,16 @@ int main()
                 myship.Kill();                                                    //if yes then kill the ship
             }
 
+            if (Intersect::isTouch(aliensbullet, myBullet)                        //if the bullet hit the aliens bullet, both bullet would be canceled
+                && myBullet.isAlive && aliensbullet.isAlive) {
+                myBullet.Kill();
+                aliensbullet.Kill();
+            }
+
             //print the aliens bullet
             aliensbullet.print(window);
 
             //----------------------------------END_AliensBullet------------------------------------------
-
-
 
             sf::Time gameTime = gameClock.getElapsedTime();
             if (gameTime.asSeconds() > 1) {
@@ -263,7 +259,7 @@ int main()
 
 
             //if the ship is not alive, then gameover
-            if (myship.isAlive == false) gameover = true;
+            if (!myship.isAlive) gameover = true;
             //boss is not include in the MAX_ALIENS, so set the condition == -1
             if (aliensLeft == -1) gameover = true;
 
@@ -289,7 +285,7 @@ int main()
             window.display();   //print the window (like cout but this for graphic use specifically)
             window.clear();     //clear the window (like system"cls" but this one is much faster since it is using a buffer)
         }
-    } while (gameover == false);     //gameover = true then stop the loop
+    } while (!gameover);     //gameover = true then stop the loop
 
     return 0;
 }
@@ -355,7 +351,6 @@ void score(std::string name, int point) {
     ofstream outputfile;
     myfile.exceptions(ifstream::badbit);    //reference: http://www.cplusplus.com/reference/ios/ios/exceptions/
 
-
     vector<pair<string, int>> user;         //STL container using pair (pair is a struct template) ref:http://en.cppreference.com/w/cpp/utility/pair
 
     try {                                               //using exception
@@ -389,7 +384,6 @@ void score(std::string name, int point) {
             cout << endl << "The score file store at: " << fs::current_path();
             outputfile.close();
         }
-
         _getch();                           //press any key to continue
         system("cls");                      //clear the screen (not efficiency, but here is ok)
     }
@@ -424,6 +418,4 @@ void lose() {
     if (GetAsyncKeyState(VK_ESCAPE))        //windows key event (when esc pressed)
         exit(EXIT_SUCCESS);                 //exit
 }
-
-
 

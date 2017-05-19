@@ -6,7 +6,7 @@
 
 #include <Ship.h>
 
-class Bullet{
+class Bullet {
 public:
     Bullet();                                           //constructor
     void print(sf::RenderWindow &window);               //print function
@@ -30,7 +30,7 @@ Bullet::Bullet() {                                      //constructor
     music.openFromFile("shoot.wav");                    //load the sound effect
 }
 
-sf::Sprite & Bullet::getSprite(){                       //getter for the sprite
+sf::Sprite & Bullet::getSprite() {                      //getter for the sprite
     return bullet;
 }
 
@@ -48,7 +48,7 @@ void Bullet::print(sf::RenderWindow &window) {          //print function, argume
         bullet.setPosition(900, 900);                   //one of the issue i will improve afterward, what i want to do here is when the bullet hit the aliens, the bullet will gone
     }
     if (isFire && position.y > -20 && isAlive) {        //if shot, and the bullet inside in window (y > -20 is just checking bounding), and is alive
-        position.y -= 7.0f;                             //y -=0.1f (which means keep going up)
+        position.y -= 7.0f;                             //y -=7.0f (which means keep going up)
         bullet.setPosition(position.x, position.y);     //set the new position to the bullet
         window.draw(bullet);                            //print it
     }

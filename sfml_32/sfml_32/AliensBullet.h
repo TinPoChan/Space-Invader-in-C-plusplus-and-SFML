@@ -6,7 +6,7 @@
 
 #include <Aliens.h>
 
-class AliensBullet{
+class AliensBullet {
 public:
     AliensBullet();                         //constructor
     void print(sf::RenderWindow &window);   //print function
@@ -32,12 +32,11 @@ sf::Sprite & AliensBullet::getSprite() {    //getter for the sprite
 void AliensBullet::alien_shoot(Aliens &myalien) {               //alien shoot function
     position.x = myalien.getSprite().getPosition().x + 5.0f;    //get the current aliens position x
     position.y = myalien.getSprite().getPosition().y;           //get the current aliens position y
-    if (myalien.isAlive == false) isAlive = false;              //check is the alive
-    else isAlive = true;                                        
+    isAlive = (!myalien.isAlive ? false : true);                //check is the alive
 }
 
 void AliensBullet::print(sf::RenderWindow &window) {            //print function
-    if  (position.y < 800 && isAlive) {                         //check bounding and is alive
+    if (position.y < 800 && isAlive) {                          //check bounding and is alive
         position.y += 5.0f;                                     //moving downward
         aliens_bullet.setPosition(position.x, position.y);      //set the new postion
         window.draw(aliens_bullet);                             //draw the bullet to the buffer

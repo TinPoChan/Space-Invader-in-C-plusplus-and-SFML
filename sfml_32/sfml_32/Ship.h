@@ -17,6 +17,7 @@ public:
 protected:
     sf::Sprite & getSprite();                           //getter for the sprite
     sf::Vector2f position;                              //the object postion
+
 private:
     sf::Music music;                                    //SFML sound effect
     sf::Texture photo;                                  //Texture
@@ -37,15 +38,14 @@ void Ship::print(sf::RenderWindow &window) {            //print function
 }
 
 void Ship::moveLeft() {                                 //moveLeft function (press left button)
-    if (position.x >= 0)                                //bounding check
-        position.x -= 5.0f;                             //set x -= 5.0f
-}
-void Ship::moveRight() {                                //moveRight function (press Right button)
-    if (position.x <= 565)                              //bounding check
-        position.x += 5.0f;                             //set x += 5.0f
+    if (position.x >= 0) position.x -= 5.0f;            //bounding check and //set x -= 5.0f
 }
 
-sf::Sprite & Ship::getSprite(){                         //getter for the sprite
+void Ship::moveRight() {                                //moveRight function (press Right button)
+    if (position.x <= 565) position.x += 5.0f;          //bounding check //set x += 5.0f
+}
+
+sf::Sprite & Ship::getSprite() {                        //getter for the sprite
     return spaceShip;                                   //return the aliens sprite
 }
 
